@@ -1,0 +1,1970 @@
+<!DOCTYPE html>
+<!-- saved from url=(0152)https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/05b8c5303cf644b66970a30f6468a66a/14bd3576-b1d3-4886-88ea-b2b534fb4963/index.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0066CC">
+    <title>ΔZero - Simulador de Arbitraje</title>
+    <style>
+        :root {
+            /* Primitive Color Tokens */
+            --color-white: rgba(255, 255, 255, 1);
+            --color-black: rgba(0, 0, 0, 1);
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-400: rgba(45, 166, 178, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-teal-700: rgba(26, 104, 115, 1);
+            --color-blue-primary: #0066CC;
+            --color-blue-hover: #0052A3;
+
+            /* Semantic tokens */
+            --color-background: var(--color-charcoal-700);
+            --color-surface: var(--color-charcoal-800);
+            --color-text: var(--color-gray-200);
+            --color-text-secondary: rgba(167, 169, 169, 0.7);
+            --color-primary: var(--color-teal-300);
+            --color-border: rgba(119, 124, 124, 0.3);
+            --color-card-border: rgba(119, 124, 124, 0.2);
+
+            /* Typography */
+            --font-family-base: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --font-size-xs: 11px;
+            --font-size-sm: 12px;
+            --font-size-base: 14px;
+            --font-size-lg: 16px;
+            --font-size-xl: 18px;
+            --font-size-2xl: 20px;
+            --font-size-3xl: 24px;
+
+            /* Spacing */
+            --space-4: 4px;
+            --space-8: 8px;
+            --space-12: 12px;
+            --space-16: 16px;
+            --space-20: 20px;
+            --space-24: 24px;
+            --space-32: 32px;
+
+            /* Border Radius */
+            --radius-sm: 6px;
+            --radius-base: 8px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+            --radius-xl: 16px;
+
+            /* Shadows */
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+
+            /* Animation */
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --ease-standard: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --color-background: var(--color-cream-50);
+                --color-surface: var(--color-cream-100);
+                --color-text: var(--color-slate-900);
+                --color-text-secondary: var(--color-slate-500);
+                --color-primary: var(--color-teal-500);
+                --color-border: rgba(94, 82, 64, 0.2);
+                --color-card-border: rgba(94, 82, 64, 0.12);
+                --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+                --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+                --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-family-base);
+            background: var(--color-background);
+            color: var(--color-text);
+            line-height: 1.5;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+            padding-top: 48px;
+            padding-bottom: 100px;
+            padding-bottom: calc(100px + env(safe-area-inset-bottom));
+        }
+
+        /* Header - ULTRA COMPACTO - FIXED Y FLOTANTE */
+        .header {
+            background: #0f172a;
+            padding: 4px 8px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid #1e293b;
+            height: 40px;
+        }
+
+        .header-content {
+            max-width: 768px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            height: 100%;
+        }
+
+        .logo {
+            font-size: 12px;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 1px;
+            min-width: 45px;
+            flex-shrink: 0;
+        }
+
+        .logo-delta {
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .navbar-controls {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .network-selector,
+        .exchanges-selector {
+            flex: 1;
+            padding: 4px 20px 4px 6px;
+            font-size: 10px;
+            height: 30px;
+            border: 1px solid #2d3748;
+            border-radius: 4px;
+            background: #1e293b;
+            color: #94a3b8;
+            font-weight: 500;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            background-size: 10px;
+            transition: all var(--duration-fast);
+            max-width: 90px;
+        }
+
+        .network-selector:hover,
+        .exchanges-selector:hover {
+            color: #ffffff;
+            border-color: #00d4ff;
+        }
+
+        .network-selector:focus,
+        .exchanges-selector:focus {
+            outline: 1px solid #00d4ff;
+            color: #ffffff;
+        }
+
+        /* Botón de Wallet */
+        .wallet-btn {
+            background: linear-gradient(135deg, #00d4ff 0%, #0066cc 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 10px;
+            height: 30px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all var(--duration-fast);
+            white-space: nowrap;
+            min-width: fit-content;
+        }
+
+        .wallet-btn:hover {
+            background: linear-gradient(135deg, #00a8cc 0%, #0052a3 100%);
+            box-shadow: 0 2px 4px rgba(0, 212, 255, 0.3);
+        }
+
+        .wallet-btn:active {
+            transform: scale(0.95);
+        }
+
+        .wallet-icon {
+            font-size: 12px;
+        }
+
+        .wallet-text {
+            font-size: 10px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 768px;
+            margin: 0 auto;
+            padding: var(--space-16);
+            padding-top: var(--space-8);
+        }
+
+        /* Secciones */
+        .section {
+            margin-bottom: var(--space-16);
+            padding-top: var(--space-8);
+        }
+
+        .section:first-child {
+            padding-top: var(--space-8);
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            letter-spacing: -0.02em;
+        }
+
+        .section-title span {
+            font-size: 18px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+        }
+
+        .section-subtitle {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            margin-bottom: var(--space-8);
+            font-weight: 500;
+        }
+
+        /* Grid de flash loans (6 columnas - botones más pequeños) */
+        .flash-loans-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+        }
+
+        @media (max-width: 360px) {
+            .flash-loans-grid {
+                gap: 4px;
+            }
+        }
+
+        /* Responsive para pantallas pequeñas - proveedores de flash loan más pequeños y auto-ajustables */
+        @media (max-width: 480px) {
+            .flash-loans-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 4px;
+            }
+            
+            .flash-loan-btn {
+                min-height: 60px;
+                padding: 4px 2px;
+            }
+            
+            .flash-loan-icon {
+                font-size: 20px;
+            }
+            
+            .flash-loan-name {
+                font-size: 9px;
+            }
+            
+            .flash-loan-info {
+                font-size: 8px;
+            }
+        }
+
+        /* Para pantallas extra pequeñas (xs) */
+        @media (max-width: 375px) {
+            .flash-loans-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 3px;
+            }
+            
+            .flash-loan-btn {
+                min-height: 55px;
+                padding: 3px 2px;
+            }
+            
+            .flash-loan-icon {
+                font-size: 18px;
+            }
+            
+            .flash-loan-name {
+                font-size: 8px;
+            }
+            
+            .flash-loan-info {
+                font-size: 7px;
+            }
+        }
+
+        /* Grid de exchanges (6 columnas - MISMO TAMAÑO que Flash Loans) */
+        .exchanges-grid {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+        }
+
+        @media (max-width: 360px) {
+            .exchanges-grid {
+                gap: 4px;
+            }
+        }
+
+        /* Responsive para pantallas pequeñas - cuadros más pequeños y auto-ajustables */
+        @media (max-width: 480px) {
+            .exchanges-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 4px;
+            }
+            
+            .exchange-btn {
+                min-height: 60px;
+                padding: 4px 2px;
+            }
+            
+            .exchange-icon {
+                font-size: 20px;
+            }
+            
+            .exchange-name {
+                font-size: 9px;
+            }
+            
+            .exchange-info {
+                font-size: 8px;
+            }
+        }
+
+        /* Para pantallas extra pequeñas (xs) */
+        @media (max-width: 375px) {
+            .exchanges-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 3px;
+            }
+            
+            .exchange-btn {
+                min-height: 55px;
+                padding: 3px 2px;
+            }
+            
+            .exchange-icon {
+                font-size: 18px;
+            }
+            
+            .exchange-name {
+                font-size: 8px;
+            }
+            
+            .exchange-info {
+                font-size: 7px;
+            }
+        }
+
+        /* Botón de Flash Loan (6 columnas - compacto) */
+        .flash-loan-btn {
+            background: var(--color-surface);
+            border: 2px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: 6px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Botón de Exchange (MISMO TAMAÑO que Flash Loans) */
+        .exchange-btn {
+            background: var(--color-surface);
+            border: 2px solid var(--color-card-border);
+            border-radius: var(--radius-base);
+            padding: 6px 4px;
+            text-align: center;
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+            position: relative;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .flash-loan-btn:hover,
+        .exchange-btn:hover {
+            box-shadow: var(--shadow-md);
+        }
+
+        .flash-loan-btn:active,
+        .exchange-btn:active {
+            transform: scale(0.97);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .flash-loan-btn.on:active,
+        .exchange-btn.on:active {
+            transform: scale(0.99);
+        }
+
+        /* Estado apagado (default) */
+        .flash-loan-btn.off,
+        .exchange-btn.off {
+            background: #2d3748;
+            border-color: rgba(119, 124, 124, 0.3);
+            opacity: 0.7;
+        }
+
+        .flash-loan-btn.off:hover,
+        .exchange-btn.off:hover {
+            opacity: 0.85;
+            border-color: rgba(119, 124, 124, 0.5);
+            transform: translateY(-2px);
+        }
+
+        @media (hover: none) {
+            .flash-loan-btn:active,
+            .exchange-btn:active {
+                background: rgba(50, 184, 198, 0.1);
+            }
+        }
+
+        /* Estado encendido - Flash Loan (CELESTE NEÓN - #00d4ff) */
+        .flash-loan-btn.on {
+            background: #2d3748 !important;
+            color: #ffffff !important;
+            border: 2px solid #00d4ff !important;
+            font-weight: bold;
+            box-shadow: 0 0 10px #00d4ff, 0 0 20px #00d4ff, inset 0 0 8px rgba(0, 212, 255, 0.2);
+            opacity: 1;
+            transform: scale(1.02);
+            cursor: default;
+        }
+
+        .flash-loan-btn.on:hover {
+            box-shadow: 0 0 15px #00d4ff, 0 0 30px #00d4ff, 0 0 40px #00d4ff, inset 0 0 12px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Estado encendido - Exchange (NEON GREEN BORDER - SIN ANIMACIÓN) */
+        .exchange-btn.on {
+            background: #2d3748 !important;
+            color: #ffffff !important;
+            border: 2px solid #00ff00 !important;
+            font-weight: bold;
+            box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, inset 0 0 8px rgba(0, 255, 0, 0.2);
+            opacity: 1;
+            transform: scale(1.02);
+            /* ANIMACIÓN ELIMINADA - glow fijo sin parpadeo */
+        }
+
+        .exchange-btn.on:hover {
+            box-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00, inset 0 0 12px rgba(0, 255, 0, 0.3);
+        }
+
+        /* Neon border glow animation - ELIMINADA según requerimiento */
+        /* @keyframes neon-border-glow {
+            0%, 100% {
+                box-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00, inset 0 0 8px rgba(0, 255, 0, 0.2);
+                border-color: #00ff00;
+            }
+            50% {
+                box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00, 0 0 40px #00ff00, inset 0 0 12px rgba(0, 255, 0, 0.3);
+                border-color: #33ff33;
+            }
+        } */
+
+        .flash-loan-btn.on .flash-loan-icon {
+            filter: brightness(1.2);
+        }
+
+        .flash-loan-btn.on .flash-loan-name {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .flash-loan-btn.on .flash-loan-info {
+            color: #ffffff;
+            background: rgba(0, 212, 255, 0.15);
+            font-weight: bold;
+        }
+
+        .exchange-btn.on .exchange-icon {
+            filter: brightness(1.2);
+        }
+
+        .flash-loan-icon {
+            font-size: 24px;
+            transition: all var(--duration-normal);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            line-height: 1;
+        }
+
+        .flash-loan-btn:hover .flash-loan-icon {
+            transform: scale(1.1);
+        }
+
+        .exchange-icon {
+            font-size: 24px;
+            transition: all var(--duration-normal);
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+            line-height: 1;
+        }
+
+        .exchange-btn:hover .exchange-icon {
+            transform: scale(1.1);
+        }
+
+        .flash-loan-name {
+            font-weight: 600;
+            font-size: 10px;
+            color: var(--color-text);
+            letter-spacing: 0;
+            line-height: 1.2;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .exchange-name {
+            font-weight: 600;
+            font-size: 10px;
+            color: var(--color-text);
+            letter-spacing: 0;
+            line-height: 1.2;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        /* Exchange name in neon green border state */
+        .exchange-btn.on .exchange-name {
+            color: #ffffff;
+            font-weight: bold;
+        }
+
+        .flash-loan-info {
+            font-size: 8px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            background: rgba(50, 184, 198, 0.1);
+            padding: 1px 4px;
+            border-radius: 3px;
+            line-height: 1.2;
+        }
+
+        .exchange-info {
+            font-size: 8px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            background: rgba(50, 184, 198, 0.1);
+            padding: 1px 4px;
+            border-radius: 3px;
+            line-height: 1.2;
+        }
+
+        /* Exchange info in neon green border state */
+        .exchange-btn.on .exchange-info {
+            color: #ffffff;
+            background: rgba(0, 255, 0, 0.15);
+            font-weight: bold;
+        }
+
+        .exchange-selected-data {
+            font-size: 8px;
+            margin-top: 2px;
+            font-weight: 600;
+            color: var(--color-primary);
+            background: rgba(50, 184, 198, 0.15);
+            padding: 1px 4px;
+            border-radius: 3px;
+            line-height: 1.2;
+        }
+
+        /* Exchange selected data in neon green border state */
+        .exchange-btn.on .exchange-selected-data {
+            color: #ffffff;
+            background: rgba(0, 255, 0, 0.2);
+            font-weight: bold;
+        }
+
+        .exchange-badge,
+        .flash-loan-badge {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 6px;
+            height: 6px;
+            background: var(--color-primary);
+            border-radius: 50%;
+            display: none;
+        }
+
+        .flash-loan-btn.on .flash-loan-badge,
+        .exchange-btn.on .exchange-badge {
+            display: block;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* Indicador de botón presionable */
+        .flash-loan-btn::after,
+        .exchange-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 3px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 2px;
+            background: var(--color-card-border);
+            border-radius: 2px;
+            transition: all var(--duration-normal);
+        }
+
+        .flash-loan-btn.on::after {
+            background: #00d4ff;
+            box-shadow: 0 0 6px #00d4ff;
+        }
+
+        .exchange-btn.on::after {
+            background: #00ff00;
+            box-shadow: 0 0 6px #00ff00;
+        }
+
+        .flash-loan-btn:hover::after {
+            width: 16px;
+        }
+
+        .exchange-btn:hover::after {
+            width: 16px;
+        }
+
+        /* Blocked exchange button styles */
+        .exchange-btn.blocked {
+            background: #2d3748;
+            border-color: rgba(119, 124, 124, 0.3);
+            opacity: 0.5;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .exchange-btn.blocked .exchange-icon {
+            filter: grayscale(100%);
+        }
+
+        .exchange-btn.blocked .exchange-name {
+            color: #6b7280;
+        }
+
+        .exchange-btn.blocked .exchange-info {
+            color: #6b7280;
+            background: rgba(119, 124, 124, 0.1);
+        }
+
+        .exchange-btn.blocked:hover {
+            transform: none;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .exchange-btn.blocked::after {
+            display: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: var(--radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 500;
+            margin-top: var(--space-4);
+        }
+
+        .badge-cex {
+            background: rgba(255, 165, 0, 0.2);
+            color: #FFA500;
+        }
+
+        .badge-dex {
+            background: rgba(147, 51, 234, 0.2);
+            color: #9333EA;
+        }
+
+        /* Área de estrategia */
+        /* Active Flash Loan - COMPACT VERSION */
+        .active-flash-loan {
+            background: #1e293b;
+            border: 1px solid #2d3748;
+            border-radius: 6px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 40px;
+            gap: 8px;
+            margin: 8px 0;
+        }
+
+        .flash-loan-card {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .flash-loan-info-compact {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            flex: 1;
+        }
+
+        .flash-loan-emoji {
+            font-size: 16px;
+        }
+
+        .flash-loan-protocol {
+            font-weight: bold;
+            color: #ffffff;
+            min-width: 45px;
+            font-size: 14px;
+        }
+
+        .flash-loan-separator {
+            color: #6b7280;
+            margin: 0 4px;
+        }
+
+        .flash-loan-token {
+            color: #94a3b8;
+            font-size: 12px;
+        }
+
+        .flash-loan-cantidad {
+            color: #94a3b8;
+            font-size: 12px;
+            font-family: monospace;
+        }
+
+        .flash-loan-change-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            width: 20px;
+            height: 20px;
+            padding: 0;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .flash-loan-change-btn:active {
+            transform: scale(0.9);
+            background: #dc2626;
+        }
+
+        .strategy-area {
+            background: var(--color-surface);
+            border: 2px dashed var(--color-card-border);
+            border-radius: var(--radius-xl);
+            padding: var(--space-24);
+            min-height: 160px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .strategy-area:has(.strategy-items[style*="flex"]) {
+            border-style: solid;
+            background: linear-gradient(135deg, rgba(50, 184, 198, 0.05) 0%, rgba(33, 128, 141, 0.05) 100%);
+        }
+
+        .strategy-empty {
+            text-align: center;
+            color: var(--color-text-secondary);
+            padding: var(--space-32) var(--space-16);
+        }
+
+        .strategy-empty p {
+            font-size: var(--font-size-base);
+            font-weight: 500;
+            margin: 0;
+        }
+
+        .strategy-empty-icon {
+            font-size: 56px;
+            margin-bottom: var(--space-16);
+            opacity: 0.4;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .strategy-items {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-12);
+        }
+
+        .strategy-item {
+            background: var(--color-background);
+            border: 1px solid var(--color-card-border);
+            border-radius: var(--radius-md);
+            padding: var(--space-12);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-12);
+        }
+
+        .strategy-item-content {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+            flex: 1;
+        }
+
+        .strategy-item-icon {
+            font-size: 24px;
+        }
+
+        .strategy-item-info {
+            flex: 1;
+        }
+
+        .strategy-item-name {
+            font-weight: 600;
+            font-size: var(--font-size-base);
+        }
+
+        .strategy-item-type {
+            font-size: var(--font-size-xs);
+            color: var(--color-text-secondary);
+        }
+
+        .remove-btn {
+            background: rgba(255, 84, 89, 0.2);
+            border: none;
+            color: #FF5459;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: var(--font-size-lg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all var(--duration-fast) var(--ease-standard);
+        }
+
+        .remove-btn:active {
+            transform: scale(0.9);
+        }
+
+        /* Botones de acción */
+        .action-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--color-surface);
+            padding: var(--space-12);
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.3);
+            display: flex;
+            gap: 8px;
+            z-index: 99;
+            justify-content: center;
+        }
+
+        /* Responsive para pantallas extra pequeñas (xs) */
+        @media (max-width: 375px) {
+            .action-buttons {
+                padding: var(--space-8);
+                gap: 6px;
+            }
+            
+            .btn {
+                padding: 8px 12px;
+                font-size: 11px;
+                min-height: 36px;
+                min-width: 80px;
+            }
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--duration-normal) var(--ease-standard);
+            min-height: 40px;
+            min-width: 100px;
+        }
+
+        .btn-reset {
+            background: #ef4444;
+            color: #ffffff;
+            border: 1px solid #dc2626;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-reset:hover {
+            background: #dc2626;
+            border: 2px solid #ef4444;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-reset:active {
+            transform: scale(0.95);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-arbitrage {
+            background: #00d4ff;
+            color: #0a1929;
+            border: 1px solid #00a8cc;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-arbitrage:hover {
+            background: #00a8cc;
+            border: 2px solid #00d4ff;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-arbitrage:active {
+            transform: scale(0.95);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:disabled:hover {
+            transform: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--color-blue-primary) 0%, var(--color-teal-500) 100%);
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-secondary {
+            background: var(--color-background);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:active {
+            background: var(--color-surface);
+        }
+
+        /* Modal de selección */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            z-index: 1000;
+            animation: fadeIn var(--duration-normal) var(--ease-standard);
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Modal de selección de exchange */
+        .selection-modal .modal-content {
+            max-height: 85vh;
+        }
+
+        .form-group {
+            margin-bottom: var(--space-20);
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            font-size: var(--font-size-base);
+            margin-bottom: var(--space-8);
+            color: var(--color-text);
+        }
+
+        .form-select,
+        .form-input {
+            width: 100%;
+            padding: var(--space-12) var(--space-16);
+            font-size: var(--font-size-base);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            background: var(--color-background);
+            color: var(--color-text);
+            appearance: none;
+            line-height: 1.5;
+            box-sizing: border-box;
+        }
+        
+        /* Asegurar padding adecuado en inputs de tipo number */
+        .form-input[type="number"] {
+            padding: var(--space-12) var(--space-16);
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23f5f5f5' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .form-input:focus,
+        .form-select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+        }
+
+        .commission-info {
+            background: rgba(50, 184, 198, 0.1);
+            border: 1px solid rgba(50, 184, 198, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-12);
+            margin-bottom: var(--space-20);
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+            line-height: 1.5;
+        }
+        
+        /* Asegurar que el texto dentro de commission-info no se superponga con el border */
+        .commission-info strong,
+        .commission-info span {
+            display: inline-block;
+            padding: 0;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: var(--space-12);
+            margin-top: var(--space-24);
+        }
+
+        .modal-actions .btn {
+            flex: 1;
+            min-height: 48px;
+        }
+
+        .modal-content {
+            background: var(--color-surface);
+            border-radius: var(--radius-xl);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalFadeIn var(--duration-normal) var(--ease-standard);
+            margin: var(--space-16);
+        }
+        
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .modal-header {
+            padding: var(--space-24) var(--space-24) var(--space-20) var(--space-24);
+            border-bottom: 1px solid var(--color-card-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0;
+        }
+        
+        .modal-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin: 0;
+            padding: 0;
+            line-height: 1.4;
+        }
+
+        /* Modales más compactos para pantallas pequeñas */
+        @media (max-width: 480px) {
+            .modal-header {
+                padding: var(--space-16) var(--space-20);
+            }
+            
+            .modal-body {
+                padding: var(--space-20);
+            }
+            
+            .modal-title {
+                font-size: var(--font-size-xl);
+            }
+            
+            .modal-close {
+                width: 32px;
+                height: 32px;
+                font-size: 20px;
+            }
+            
+            .form-input,
+            .form-select {
+                padding: var(--space-10);
+                font-size: var(--font-size-sm);
+                min-height: 44px;
+            }
+            
+            .form-select {
+                background-position: right 10px center;
+                padding-right: 36px;
+                background-size: 14px;
+            }
+            
+            .form-label {
+                font-size: var(--font-size-sm);
+                margin-bottom: var(--space-8);
+            }
+            
+            .form-group {
+                margin-bottom: var(--space-16);
+            }
+            
+            .commission-info {
+                padding: var(--space-10);
+                font-size: var(--font-size-xs);
+                margin-bottom: var(--space-16);
+            }
+            
+            .modal-actions {
+                margin-top: var(--space-20);
+                gap: var(--space-10);
+            }
+            
+            .modal-actions .btn {
+                min-height: 44px;
+                font-size: var(--font-size-sm);
+            }
+        }
+
+        /* Para pantallas extra pequeñas (xs) */
+        @media (max-width: 375px) {
+            .modal-header {
+                padding: var(--space-12) var(--space-16);
+            }
+            
+            .modal-body {
+                padding: var(--space-16);
+            }
+            
+            .modal-title {
+                font-size: var(--font-size-lg);
+            }
+            
+            .modal-close {
+                width: 28px;
+                height: 28px;
+                font-size: 18px;
+            }
+            
+            .form-input,
+            .form-select {
+                padding: var(--space-8);
+                font-size: var(--font-size-xs);
+                min-height: 40px;
+            }
+            
+            .form-select {
+                background-position: right 8px center;
+                padding-right: 32px;
+                background-size: 12px;
+            }
+            
+            .form-label {
+                font-size: var(--font-size-xs);
+                margin-bottom: var(--space-6);
+            }
+            
+            .form-group {
+                margin-bottom: var(--space-12);
+            }
+            
+            .commission-info {
+                padding: var(--space-8);
+                font-size: var(--font-size-xs);
+                margin-bottom: var(--space-12);
+            }
+            
+            .modal-actions {
+                margin-top: var(--space-16);
+                gap: var(--space-8);
+            }
+            
+            .modal-actions .btn {
+                min-height: 40px;
+                font-size: var(--font-size-xs);
+                padding: var(--space-8) var(--space-12);
+            }
+        }
+
+        /* Modal de Flash Loan ultra compacto para celular */
+        @media (max-width: 480px) {
+            #flashLoanModal .modal-content {
+                max-width: 320px;
+                margin: 0 auto;
+            }
+            
+            #flashLoanModal .modal-body {
+                padding: var(--space-16) var(--space-20);
+            }
+            
+            #flashLoanModal .form-label {
+                font-size: var(--font-size-xs);
+                margin-bottom: var(--space-6);
+            }
+            
+            #flashLoanModal .form-input,
+            #flashLoanModal .form-select {
+                padding: var(--space-10) var(--space-14);
+                font-size: var(--font-size-sm);
+                min-height: 36px;
+                border-radius: var(--radius-sm);
+            }
+            
+            #flashLoanModal .form-input[type="number"] {
+                padding: var(--space-10) var(--space-14);
+            }
+            
+            #flashLoanModal .form-select {
+                background-position: right 10px center;
+                padding-right: 36px;
+                background-size: 12px;
+            }
+            
+            #flashLoanModal .modal-actions {
+                margin-top: var(--space-16);
+                gap: var(--space-8);
+            }
+            
+            #flashLoanModal .modal-actions .btn {
+                min-height: 36px;
+                font-size: var(--font-size-xs);
+                padding: var(--space-8) var(--space-12);
+            }
+            
+            #flashLoanModal .btn-secondary {
+                display: none; /* Ocultar botón cancelar en móvil para ahorrar espacio */
+            }
+            
+            #flashLoanModal .btn-primary {
+                width: 100%;
+            }
+        }
+
+        /* Para pantallas extra pequeñas */
+        @media (max-width: 375px) {
+            #flashLoanModal .modal-content {
+                max-width: 280px;
+            }
+            
+            #flashLoanModal .modal-body {
+                padding: var(--space-12) var(--space-16);
+            }
+            
+            #flashLoanModal .form-input,
+            #flashLoanModal .form-select {
+                padding: var(--space-8) var(--space-12);
+                font-size: var(--font-size-xs);
+                min-height: 32px;
+            }
+            
+            #flashLoanModal .form-input[type="number"] {
+                padding: var(--space-8) var(--space-12);
+            }
+            
+            #flashLoanModal .form-select {
+                background-position: right 8px center;
+                padding-right: 32px;
+                background-size: 12px;
+            }
+            
+            #flashLoanModal .form-label {
+                font-size: var(--font-size-xs);
+            }
+            
+            #flashLoanModal .modal-actions .btn {
+                min-height: 32px;
+                font-size: var(--font-size-xs);
+            }
+        }
+
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--color-text);
+            font-size: 24px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background var(--duration-fast);
+        }
+
+        .modal-close:active {
+            background: var(--color-background);
+        }
+
+        .modal-body {
+            padding: var(--space-24);
+            padding-top: var(--space-24);
+        }
+        
+        .modal-body > *:first-child {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        
+        .modal-body > *:last-child {
+            margin-bottom: 0;
+        }
+        
+        /* Asegurar que el contenido no se superponga con el border del header */
+        .modal-header + .modal-body {
+            padding-top: var(--space-24);
+        }
+        
+        /* Asegurar padding adecuado en los elementos del formulario */
+        .modal-body .form-group {
+            padding-top: 0;
+            margin-top: 0;
+        }
+        
+        .modal-body .form-group:first-child {
+            margin-top: 0;
+            padding-top: 0;
+        }
+        
+        /* Asegurar que los labels y inputs tengan espacio adecuado */
+        .modal-body .form-label {
+            margin-top: 0;
+            padding-top: 0;
+            margin-bottom: var(--space-8);
+        }
+        
+        .modal-body .form-input,
+        .modal-body .form-select {
+            margin-top: 0;
+        }
+
+        .result-card {
+            background: var(--color-background);
+            border-radius: var(--radius-lg);
+            padding: var(--space-20);
+            margin-bottom: var(--space-16);
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: var(--space-12);
+            margin-bottom: var(--space-16);
+        }
+
+        .result-icon {
+            font-size: 40px;
+        }
+
+        .result-value {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+        }
+
+        .result-label {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-secondary);
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            padding: var(--space-12) 0;
+            border-bottom: 1px solid var(--color-card-border);
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+        }
+
+        .viability-indicator {
+            display: flex;
+            align-items: center;
+            gap: var(--space-8);
+            padding: var(--space-12);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            margin-top: var(--space-16);
+        }
+
+        .viability-high {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22C55E;
+        }
+
+        .viability-medium {
+            background: rgba(251, 191, 36, 0.2);
+            color: #FBBF24;
+        }
+
+        .viability-low {
+            background: rgba(239, 68, 68, 0.2);
+            color: #EF4444;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        /* Exchange sections transition */
+        .section {
+            transition: all 0.3s ease;
+        }
+
+        section[id^="exchangeSection"] {
+            transition: all 0.3s ease;
+        }
+
+        /* Collapsible sections */
+        .collapsible {
+            margin-bottom: var(--space-16);
+        }
+
+        .collapsible-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: var(--space-12);
+            background: var(--color-surface);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-12);
+        }
+
+        .collapsible-toggle {
+            font-size: var(--font-size-lg);
+            transition: transform var(--duration-normal);
+        }
+
+        .collapsible.collapsed .collapsible-toggle {
+            transform: rotate(-90deg);
+        }
+
+        .collapsible-content {
+            max-height: 2000px;
+            overflow: hidden;
+            transition: max-height var(--duration-normal) var(--ease-standard);
+        }
+
+        .collapsible.collapsed .collapsible-content {
+            max-height: 0;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: var(--space-24);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--color-border);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header - NAVBAR ULTRA COMPACTO -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <span class="logo-delta">Δ</span>
+                <span>Zero</span>
+            </div>
+            <div class="navbar-controls">
+                <select id="networkSelector" class="network-selector">
+                    <option value="ethereum">Ethereum</option>
+                    <option value="bnbchain">BNB Chain</option>
+                    <option value="solana">Solana</option>
+                    <option value="cardano">Cardano</option>
+                    <option value="polygon">Polygon</option>
+                    <option value="arbitrum">Arbitrum</option>
+                </select>
+                <select id="exchangesSelector" class="exchanges-selector">
+                    <option value="2" selected="">2 Intercambios</option>
+                    <option value="3">3 Intercambios</option>
+                    <option value="4">4 Intercambios</option>
+                </select>
+                <button class="wallet-btn" id="walletBtn" onclick="connectWallet()">
+                    <span class="wallet-icon">🔐</span>
+                    <span class="wallet-text">Wallet</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container">
+        <!-- SECCIÓN FLASH LOANS - PRIMERA Y MÁS PROMINENTE -->
+        <section class="section">
+            <h2 class="section-title">
+                PROVEEDORES DE FLASH LOANS
+            </h2>
+            <div class="flash-loans-grid" id="flashLoansGrid">
+            <button class="flash-loan-btn off" onclick="openFlashLoanModal(&#39;aave&#39;)" id="btn-flashloan-aave">
+                <div class="flash-loan-badge"></div>
+                <div class="flash-loan-icon">🏛️</div>
+                <div class="flash-loan-name">AAVE</div>
+                <div class="flash-loan-info">0.09%</div>
+            </button>
+        
+            <button class="flash-loan-btn off" onclick="openFlashLoanModal(&#39;dydx&#39;)" id="btn-flashloan-dydx">
+                <div class="flash-loan-badge"></div>
+                <div class="flash-loan-icon">💎</div>
+                <div class="flash-loan-name">dYdX</div>
+                <div class="flash-loan-info">0%</div>
+            </button>
+        
+            <button class="flash-loan-btn off" onclick="openFlashLoanModal(&#39;uniswap_v2&#39;)" id="btn-flashloan-uniswap_v2">
+                <div class="flash-loan-badge"></div>
+                <div class="flash-loan-icon">🦄</div>
+                <div class="flash-loan-name">Uniswap V2</div>
+                <div class="flash-loan-info">0.3%</div>
+            </button>
+        
+            <button class="flash-loan-btn off" onclick="openFlashLoanModal(&#39;balancer&#39;)" id="btn-flashloan-balancer">
+                <div class="flash-loan-badge"></div>
+                <div class="flash-loan-icon">⚖️</div>
+                <div class="flash-loan-name">Balancer</div>
+                <div class="flash-loan-info">0%</div>
+            </button>
+        
+            <button class="flash-loan-btn off" onclick="openFlashLoanModal(&#39;makerdao&#39;)" id="btn-flashloan-makerdao">
+                <div class="flash-loan-badge"></div>
+                <div class="flash-loan-icon">🏦</div>
+                <div class="flash-loan-name">MakerDAO</div>
+                <div class="flash-loan-info">0%</div>
+            </button>
+        </div>
+        </section>
+
+        <!-- PRÉSTAMO FLASH -->
+        <section class="section" id="activeFlashLoanSection" style="display: none;">
+            <h2 class="section-title">
+                Préstamo Flash
+            </h2>
+            <div id="activeFlashLoan" class="active-flash-loan"></div>
+        </section>
+
+        <!-- SECCIÓN INTERCAMBIO 1 -->
+        <section class="section" id="exchangeSection1" style="display: block; opacity: 1; max-height: 2000px; overflow: visible;">
+            <h2 class="section-title">
+                <span>🔄</span>
+                INTERCAMBIO 1
+            </h2>
+            <div class="exchanges-grid" id="exchangeGrid1">
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Binance&#39;, 1)" id="btn-binance-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🏦</div>
+                <div class="exchange-name">Binance</div>
+                <div class="exchange-info">Fee: 0.1%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Coinbase&#39;, 1)" id="btn-coinbase-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🪙</div>
+                <div class="exchange-name">Coinbase</div>
+                <div class="exchange-info">Fee: 0.5%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Kraken&#39;, 1)" id="btn-kraken-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🌊</div>
+                <div class="exchange-name">Kraken</div>
+                <div class="exchange-info">Fee: 0.26%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;OKX&#39;, 1)" id="btn-okx-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">⚡</div>
+                <div class="exchange-name">OKX</div>
+                <div class="exchange-info">Fee: 0.1%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Kraken Pro&#39;, 1)" id="btn-kraken-pro-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🏛️</div>
+                <div class="exchange-name">Kraken Pro</div>
+                <div class="exchange-info">Fee: 0.16%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Uniswap V3&#39;, 1)" id="btn-uniswap-v3-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🦄</div>
+                <div class="exchange-name">Uniswap V3</div>
+                <div class="exchange-info">Fee: 0.3%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;SushiSwap&#39;, 1)" id="btn-sushiswap-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🍣</div>
+                <div class="exchange-name">SushiSwap</div>
+                <div class="exchange-info">Fee: 0.3%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Balancer&#39;, 1)" id="btn-balancer-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">⚖️</div>
+                <div class="exchange-name">Balancer</div>
+                <div class="exchange-info">Fee: 0.3%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Curve&#39;, 1)" id="btn-curve-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">📈</div>
+                <div class="exchange-name">Curve</div>
+                <div class="exchange-info">Fee: 0.04%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;0x&#39;, 1)" id="btn-0x-1">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">ⓞ</div>
+                <div class="exchange-name">0x</div>
+                <div class="exchange-info">Fee: 0.5%</div>
+                
+            </button>
+        </div>
+        </section>
+
+        <!-- SECCIÓN INTERCAMBIO 2 -->
+        <section class="section" id="exchangeSection2" style="display: block; opacity: 1; max-height: 2000px; overflow: visible;">
+            <h2 class="section-title">
+                <span>🔄</span>
+                INTERCAMBIO 2
+            </h2>
+            <div class="exchanges-grid" id="exchangeGrid2">
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Binance&#39;, 2)" id="btn-binance-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🏦</div>
+                <div class="exchange-name">Binance</div>
+                <div class="exchange-info">Fee: 0.1%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Coinbase&#39;, 2)" id="btn-coinbase-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🪙</div>
+                <div class="exchange-name">Coinbase</div>
+                <div class="exchange-info">Fee: 0.5%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Kraken&#39;, 2)" id="btn-kraken-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🌊</div>
+                <div class="exchange-name">Kraken</div>
+                <div class="exchange-info">Fee: 0.26%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;OKX&#39;, 2)" id="btn-okx-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">⚡</div>
+                <div class="exchange-name">OKX</div>
+                <div class="exchange-info">Fee: 0.1%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Kraken Pro&#39;, 2)" id="btn-kraken-pro-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🏛️</div>
+                <div class="exchange-name">Kraken Pro</div>
+                <div class="exchange-info">Fee: 0.16%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Uniswap V3&#39;, 2)" id="btn-uniswap-v3-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🦄</div>
+                <div class="exchange-name">Uniswap V3</div>
+                <div class="exchange-info">Fee: 0.3%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;SushiSwap&#39;, 2)" id="btn-sushiswap-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">🍣</div>
+                <div class="exchange-name">SushiSwap</div>
+                <div class="exchange-info">Fee: 0.3%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Balancer&#39;, 2)" id="btn-balancer-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">⚖️</div>
+                <div class="exchange-name">Balancer</div>
+                <div class="exchange-info">Fee: 0.3%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;Curve&#39;, 2)" id="btn-curve-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">📈</div>
+                <div class="exchange-name">Curve</div>
+                <div class="exchange-info">Fee: 0.04%</div>
+                
+            </button>
+        
+            <button class="exchange-btn off" onclick="openExchangeModal(&#39;0x&#39;, 2)" id="btn-0x-2">
+                <div class="exchange-badge"></div>
+                <div class="exchange-icon">ⓞ</div>
+                <div class="exchange-name">0x</div>
+                <div class="exchange-info">Fee: 0.5%</div>
+                
+            </button>
+        </div>
+        </section>
+
+        <!-- SECCIÓN INTERCAMBIO 3 -->
+        <section class="section" id="exchangeSection3" style="display: none; opacity: 0; max-height: 0px; overflow: hidden;">
+            <h2 class="section-title">
+                <span>🔄</span>
+                INTERCAMBIO 3
+            </h2>
+            <div class="exchanges-grid" id="exchangeGrid3"></div>
+        </section>
+
+        <!-- SECCIÓN INTERCAMBIO 4 -->
+        <section class="section" id="exchangeSection4" style="display: none; opacity: 0; max-height: 0px; overflow: hidden;">
+            <h2 class="section-title">
+                <span>🔄</span>
+                INTERCAMBIO 4
+            </h2>
+            <div class="exchanges-grid" id="exchangeGrid4"></div>
+        </section>
+
+        <!-- SECCIÓN INTERCAMBIO 5 -->
+        <section class="section" id="exchangeSection5" style="display: none; opacity: 0; max-height: 0px; overflow: hidden;">
+            <h2 class="section-title">
+                <span>🔄</span>
+                INTERCAMBIO 5
+            </h2>
+            <div class="exchanges-grid" id="exchangeGrid5"></div>
+        </section>
+
+        <!-- DEVOLVIENDO PRÉSTAMO A -->
+        <section class="section" id="repaymentSection" style="display: none;">
+            <h2 class="section-title">
+                Devolviendo Préstamo a
+            </h2>
+            <div id="repaymentFlashLoan" class="active-flash-loan"></div>
+        </section>
+
+    </main>
+
+    <!-- Botones de acción fijos -->
+    <div class="action-buttons">
+        <button class="btn btn-reset" onclick="resetApp()" id="resetBtn">
+            Reset
+        </button>
+        <button class="btn btn-arbitrage" onclick="simulateStrategy()" id="simulateBtn" disabled="">
+            Arbitraje
+        </button>
+    </div>
+
+    <!-- Modal de Flash Loan -->
+    <div id="flashLoanModal" class="modal selection-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalFlashLoanName">Flash Loan</h3>
+                <button class="modal-close" onclick="closeFlashLoanModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex; gap: 12px; align-items: flex-end;">
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label class="form-label">💰 Cantidad</label>
+                        <input type="number" id="flashLoanAmount" class="form-input" value="1000" min="0" step="0.01">
+                    </div>
+
+                    <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                        <label class="form-label">🪙 Token</label>
+                        <select id="flashLoanToken" class="form-select">
+                            <option value="USDC">USDC</option>
+                            <option value="DAI">DAI</option>
+                            <option value="USDT">USDT</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-secondary" onclick="closeFlashLoanModal()">Cancelar</button>
+                    <button class="btn btn-primary" onclick="confirmFlashLoan()">Solicitar Flash Loan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de selección de exchange -->
+    <div id="selectionModal" class="modal selection-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalExchangeName">Exchange</h3>
+                <button class="modal-close" onclick="closeSelectionModal()">✕</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group" style="display: flex; align-items: center; gap: var(--space-12); margin-bottom: var(--space-16); justify-content: flex-start;">
+                    <label class="form-label" style="margin: 0; min-width: 140px; flex-shrink: 0;">💵 Token a enviar</label>
+                    <input type="text" id="exchangeModalTokenDisplay" class="form-input" value="USDC" readonly style="flex: 1; background: rgba(50, 184, 198, 0.15); border-color: rgba(50, 184, 198, 0.4); cursor: not-allowed;">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">🪙 Moneda a recibir</label>
+                    <select id="tokenToReceiveSelect" class="form-select">
+                        <option value="">-- Selecciona una moneda --</option>
+                    </select>
+                    <div id="lastExchangeNote" style="display: none; font-size: 12px; color: var(--color-text-secondary); margin-top: 4px; font-style: italic;">(Token del Flash Loan - Fijo)</div>
+                </div>
+
+                <div id="lastExchangeInfo" class="commission-info" style="display: none; background: rgba(50, 184, 198, 0.15); border-color: rgba(50, 184, 198, 0.4);">
+                    <strong>ⓘ Esta moneda es obligatoria para cerrar el ciclo de arbitraje y devolver el flash loan.</strong>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn btn-primary" onclick="confirmSelection()" style="width: 100%;">Confirmar Intercambio</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de resultados -->
+    <div id="resultsModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">📊 Resultados</h3>
+                <button class="modal-close" onclick="closeModal()">✕</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p style="margin-top: 16px; color: var(--color-text-secondary);">Calculando...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./ΔZero - Simulador de Arbitraje_files/app.js.descarga"></script>
+
+</body></html>
